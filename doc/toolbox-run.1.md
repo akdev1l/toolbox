@@ -7,6 +7,7 @@ toolbox\-run - Run a command in an existing toolbox container
 **toolbox run** [*--container NAME* | *-c NAME*]
             [*--distro DISTRO* | *-d DISTRO*]
             [*--release RELEASE* | *-r RELEASE*]
+            [*--preserve-fds N*]
             [*COMMAND*]
 
 ## DESCRIPTION
@@ -41,6 +42,11 @@ matches the host system.
 
 Run command inside a toolbox container for a different operating system
 RELEASE than the host.
+
+**--preserve-fds** N
+
+Pass down to the process N additional file descriptors (in addition to 0, 1,
+2).  The total FDs will be 3+N.
 
 ## EXIT STATUS
 

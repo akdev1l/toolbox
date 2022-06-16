@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -33,9 +34,10 @@ import (
 
 var (
 	runFlags struct {
-		container string
-		distro    string
-		release   string
+		container    string
+		distro       string
+		release      string
+		preserve_fds int
 	}
 
 	runFallbackCommands = [][]string{{"/bin/bash", "-l"}}
@@ -70,6 +72,12 @@ func init() {
 		"r",
 		"",
 		"Run command inside a toolbox container for a different operating system release than the host")
+
+	flags.IntVarP(&runFlags.preserve_fds,
+		"preserve-fds",
+		"",
+		0,
+		"Forward this many file descriptors (starting from fd 3)")
 
 	runCmd.SetHelpFunc(runHelp)
 
@@ -474,6 +482,10 @@ func constructExecArgs(container string,
 	}...)
 
 	execArgs = append(execArgs, envOptions...)
+
+	if runFlags.preserve_fds != 0 {
+		execArgs = append(execArgs, "--preserve-fds="+strconv.Itoa(runFlags.preserve_fds))
+	}
 
 	execArgs = append(execArgs, []string{
 		container,
