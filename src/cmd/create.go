@@ -416,6 +416,10 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 		"--env", toolboxPathEnvArg,
 	}
 
+	createArgs = append(createArgs, []string{
+		"--cgroupns=host",
+	}...)
+
 	createArgs = append(createArgs, xdgRuntimeDirEnv...)
 
 	hostname, err := os.Hostname()
