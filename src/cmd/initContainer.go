@@ -179,14 +179,6 @@ func initContainer(cmd *cobra.Command, args []string) error {
 				}
 			}
 
-			if _, err := os.Readlink("/etc/hosts"); err != nil {
-				if err := redirectPath("/etc/hosts",
-					"/run/host/etc/hosts",
-					false); err != nil {
-					return err
-				}
-			}
-
 			if localtimeTarget, err := os.Readlink("/etc/localtime"); err != nil ||
 				localtimeTarget != "/run/host/etc/localtime" {
 				if err := redirectPath("/etc/localtime",

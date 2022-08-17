@@ -54,7 +54,7 @@ This will create a container called `fedora-toolbox-<version-id>`.
 ### Enter the toolbox:
 ```console
 [user@hostname ~]$ toolbox enter
-⬢[user@toolbox ~]$
+⬢[user@fedora-toolbox-<version-id> ~]$
 ```
 
 ### Remove a toolbox container:
