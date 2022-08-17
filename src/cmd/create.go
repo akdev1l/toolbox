@@ -418,8 +418,12 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 
 	createArgs = append(createArgs, xdgRuntimeDirEnv...)
 
+	hostname, err := os.Hostname()
+	containerHostname := container + "." + hostname
+
 	createArgs = append(createArgs, []string{
-		"--hostname", "toolbox",
+		"--add-host", containerHostname + ":127.0.0.1",
+		"--hostname", containerHostname,
 		"--ipc", "host",
 		"--label", "com.github.containers.toolbox=true",
 	}...)
@@ -429,7 +433,6 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 	createArgs = append(createArgs, []string{
 		"--name", container,
 		"--network", "host",
-		"--no-hosts",
 		"--pid", "host",
 		"--privileged",
 		"--security-opt", "label=disable",
