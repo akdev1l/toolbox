@@ -45,6 +45,7 @@ var (
 		shell       string
 		uid         int
 		user        string
+		ephemeral   bool
 	}
 
 	initContainerMounts = []struct {
@@ -112,6 +113,10 @@ func init() {
 		"shell",
 		"",
 		"Create a user inside the toolbox container whose login shell is SHELL")
+	flags.BoolVar(&initContainerFlags.ephemeral,
+		"ephemeral",
+		false,
+		"Remove container after last process is finished")
 	err = initContainerCmd.MarkFlagRequired("shell")
 	if err != nil {
 		panic("Could not mark flag --shell as required")
@@ -258,7 +263,7 @@ func initContainer(cmd *cobra.Command, args []string) error {
 # # To disable the KCM credential cache, comment out the following lines.
 
 [libdefaults]
-    default_ccache_name = KCM:
+	default_ccache_name = KCM:
 `
 
 		kcmConfigBytes := []byte(kcmConfigString)

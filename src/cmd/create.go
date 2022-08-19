@@ -47,6 +47,8 @@ var (
 		distro    string
 		image     string
 		release   string
+		temporary bool
+		enter     bool
 	}
 
 	createToolboxShMounts = []struct {
@@ -96,6 +98,16 @@ func init() {
 		"r",
 		"",
 		"Create a toolbox container for a different operating system release than the host")
+	flags.BoolVarP(&createFlags.temporary,
+		"temporary",
+		"t",
+		false,
+		"Remove toolbox container after last process has finished")
+	flags.BoolVarP(&createFlags.enter,
+		"enter",
+		"e",
+		false,
+		"Enter to toolbox container immediately")
 
 	createCmd.SetHelpFunc(createHelp)
 
@@ -158,6 +170,9 @@ func create(cmd *cobra.Command, args []string) error {
 			return errors.New(errMsg)
 		}
 	}
+	if createFlags.temporary && container == "" {
+		container = fmt.Sprintf("toolbox-%v", time.Now().Unix())
+	}
 
 	distro, err := utils.ResolveDistro(createFlags.distro)
 	if err != nil {
@@ -185,10 +200,18 @@ func create(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := createContainer(container, image, release, true); err != nil {
+	showEnterMessage := !createFlags.enter && !createFlags.temporary
+	if err := createContainer(container, image, release, showEnterMessage); err != nil {
 		return err
 	}
 
+	if createFlags.enter {
+		enterCmd.RunE(cmd, []string{container})
+	} else if createFlags.temporary {
+		enterCmd.RunE(cmd, []string{container})
+		rmCmd.ParseFlags([]string{"--force"})
+		rmCmd.RunE(cmd, []string{container})
+	}
 	return nil
 }
 
@@ -482,8 +505,10 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 	if logLevel := logrus.GetLevel(); logLevel < logrus.DebugLevel && term.IsTerminal(stdoutFdInt) {
 		s.Prefix = fmt.Sprintf("Creating container %s: ", container)
 		s.Writer = os.Stdout
-		s.Start()
-		defer s.Stop()
+		if showCommandToEnter {
+			s.Start()
+			defer s.Stop()
+		}
 	}
 
 	if err := shell.Run("podman", nil, nil, nil, createArgs...); err != nil {
