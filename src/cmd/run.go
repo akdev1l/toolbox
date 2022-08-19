@@ -385,6 +385,8 @@ func runCommandWithFallbacks(container string, command []string, emitEscapeSeque
 			} else {
 				return nil
 			}
+		case 130:
+			return nil
 		default:
 			return &exitError{exitCode, nil}
 		}
@@ -477,10 +479,10 @@ func constructExecArgs(container string,
 
 	execArgs = append(execArgs, []string{
 		container,
-		"capsh", "--caps=", "--", "-c", "exec \"$@\"", "/bin/sh",
+		"capsh", "--caps=", "--", "-c",
 	}...)
 
-	execArgs = append(execArgs, command...)
+	execArgs = append(execArgs, fmt.Sprintf("exec %s", strings.Join(command, " ")))
 
 	return execArgs
 }
