@@ -67,13 +67,13 @@ if ! dynamic_linker_canonical_dirname=$(dirname "$dynamic_linker_canonical"); th
     exit 1
 fi
 
-dynamic_linker="/run/host$dynamic_linker_canonical_dirname/$dynamic_linker_basename"
+export CGO_ENABLED=0
 
 # shellcheck disable=SC2086
 go build \
         $tags \
         -trimpath \
-        -ldflags "-extldflags '-Wl,-dynamic-linker,$dynamic_linker -Wl,-rpath,/run/host$libc_dir_canonical_dirname' -linkmode external -X github.com/containers/toolbox/pkg/version.currentVersion=$3" \
+	-ldflags "-X github.com/containers/toolbox/pkg/version.currentVersion=$3" \
         -o "$2/toolbox"
 
 exit "$?"
