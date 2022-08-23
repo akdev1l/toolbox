@@ -1,0 +1,30 @@
+name: build development release
+
+on:
+  push:
+    branch: akdev
+
+jobs:
+  build:
+    name: build binaries
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:36
+    steps:
+      - uses: actions/checkout@v2
+      - name: install build dependencies
+        run: dnf install -y go meson go-md2man ShellCheck fish cmake podman
+      - name: create build dir
+        run: mkdir -p build
+      - name: configure meson project
+        run: meson setup build . -Dinstall_completions=false
+      - name: run ninja build
+        run: ninja -C build
+      - name: install for packaging purposes
+        run: ninja -C build install
+      - name: quick sanity test
+        run: /usr/local/bin/toolbox --version
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolbox
+          path: /usr/local
