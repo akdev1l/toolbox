@@ -414,7 +414,7 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 
 	userShell := os.Getenv("SHELL")
 	if userShell == "" {
-		return errors.New("failed to get the current user's default shell")
+		userShell = "/bin/sh"
 	}
 
 	entryPoint := []string{
