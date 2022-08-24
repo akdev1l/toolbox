@@ -117,6 +117,60 @@ var (
 			"ubi8",
 			false,
 		},
+		"ubuntu": {
+			"ubuntu-toolbox",
+			"ubuntu-toolbox",
+			parseUbuntuRelease,
+			"ubuntu-toolbox:<major.minor>",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
+		"centos": {
+			"centos-toolbox",
+			"centos-toolbox",
+			parseUbuntuRelease,
+			"centos-toolbox:<major>",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
+		"alpine": {
+			"alpine-toolbox",
+			"alpine-toolbox",
+			parseUbuntuRelease,
+			"alpine-toolbox:<major>.<minor>",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
+		"archlinux": {
+			"archlinux-toolbox",
+			"archlinux-toolbox",
+			parseLatestRelease,
+			"archlinux-toolbox:latest",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
+		"kalilinux": {
+			"kalilinux-toolbox",
+			"kalilinux-toolbox",
+			parseLatestRelease,
+			"kalilinux-toolbox:latest",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
+		"gentoo": {
+			"gentoo-toolbox",
+			"gentoo-toolbox",
+			parseLatestRelease,
+			"gentoo-toolbox:latest",
+			"docker.io/akdev1l",
+			"",
+			false,
+		},
 	}
 )
 
@@ -694,6 +748,22 @@ func parseReleaseRHEL(release string) (string, error) {
 	}
 
 	return release, nil
+}
+
+func parseUbuntuRelease(release string) (string, error) {
+	if i := strings.IndexRune(release, '.'); i == -1 {
+		return "", errors.New("release must have a '.'")
+	}
+
+	return release, nil
+}
+
+func parseLatestRelease(release string) (string, error) {
+	if release == "latest" {
+		return release, nil
+	}
+
+	return "", errors.New("release must be equal to 'latest'")
 }
 
 // PathExists wraps around os.Stat providing a nice interface for checking an existence of a path.
