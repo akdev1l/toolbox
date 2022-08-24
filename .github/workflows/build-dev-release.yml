@@ -28,3 +28,7 @@ jobs:
         with:
           name: toolbox
           path: /usr/local
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolbox-bin
+          path: /usr/local/bin/toolbox
