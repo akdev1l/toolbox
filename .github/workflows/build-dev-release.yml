@@ -55,6 +55,7 @@ jobs:
       - name: toolbox sanity testing
         run: |
           chmod +x /tmp/toolbox/bin/toolbox
+          podman pull docker.io/akdev1l/centos-toolbox:8
           /tmp/toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
           /tmp/toolbox/bin/toolbox run -c test-toolbox ls
           /tmp/toolbox/bin/toolbox rm -f test-toolbox
