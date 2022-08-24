@@ -1,4 +1,4 @@
-name: build development release
+name: dev-build
 
 on:
   push:
@@ -32,3 +32,27 @@ jobs:
         with:
           name: toolbox-bin
           path: /usr/local/bin/toolbox
+  test:
+    name: sanity test on ubuntu-latest
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - name: downloading necessary packages
+        run: sudo apt-get install -y podman bats git
+      - name: initialize submodules
+        run: |
+          git submodule init
+          git submodule update
+      - name: download toolbox artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox
+      - name: print download file tree
+        run: tree /opt/toolbox
+      - name: toolbox sanity testing
+        run: |
+          ./toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
+          ./toolbox/bin/toolbox run -c test-toolbox ls
+          ./toolbox/bin/toolbox rm -f test-toolbox
+
