@@ -53,7 +53,10 @@ jobs:
       - name: print downloaded file tree
         run: tree /tmp/toolbox
       - name: toolbox sanity testing
+        env:
+          SHELL: /bin/bash
         run: |
+          set -x
           chmod +x /tmp/toolbox/bin/toolbox
           podman pull docker.io/akdev1l/centos-toolbox:8
           /tmp/toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
