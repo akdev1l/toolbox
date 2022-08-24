@@ -741,7 +741,7 @@ func pullImage(image, release string) (bool, error) {
 	if promptForDownload {
 		fmt.Println("Image required to create toolbox container.")
 
-		prompt := fmt.Sprintf("Download %s (500MB)? [y/N]:", imageFull)
+		prompt := fmt.Sprintf("Download %s? [y/N]:", imageFull)
 		shouldPullImage = askForConfirmation(prompt)
 	}
 

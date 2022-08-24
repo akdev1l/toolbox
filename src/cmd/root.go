@@ -106,7 +106,7 @@ func init() {
 
 	persistentFlags.StringVar(&rootFlags.logLevel,
 		"log-level",
-		"error",
+		"info",
 		"Log messages at the specified level: trace, debug, info, warn, error, fatal or panic")
 
 	persistentFlags.BoolVar(&rootFlags.logPodman,

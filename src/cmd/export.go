@@ -1,0 +1,170 @@
+/*
+ * Copyright © 2019 – 2021 Red Hat Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cmd
+
+import (
+	"errors"
+	"fmt"
+	"os"
+	"path"
+
+	"github.com/containers/toolbox/pkg/utils"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+)
+
+var (
+	exportFlags struct {
+		container string
+		appName string
+		serviceName string
+		binaryPath string
+		extraFlags string
+		deleteMode bool
+		exportPath string
+	}
+)
+
+var exportCmd = &cobra.Command{
+	Use:               "export",
+	Short:             "Exports an application, binary or service to the host",
+	RunE:              export,
+	ValidArgsFunction: completionEmpty,
+}
+
+func init() {
+	flags := exportCmd.Flags()
+
+	flags.StringVarP(&exportFlags.container,
+		"container",
+		"c",
+		"",
+		"container name",
+	)
+	flags.StringVarP(&exportFlags.appName,
+		"app",
+		"a",
+		"",
+		"applicatio to export",
+	)
+	flags.StringVarP(&exportFlags.serviceName,
+		"service",
+		"s",
+		"",
+		"systemd service name to export",
+	)
+	flags.StringVarP(&exportFlags.binaryPath,
+		"bin",
+		"b",
+		"",
+		"path to binary to export",
+	)
+	flags.StringVarP(&exportFlags.exportPath,
+		"export-path",
+		"p",
+		"$HOME/.local/bin",
+		"Path to export binary applications",
+	)
+	flags.StringVarP(&exportFlags.extraFlags,
+		"extra-flags",
+		"e",
+		"",
+		"Set this option to pass extra flags to the application",
+	)
+	flags.BoolVarP(&exportFlags.deleteMode,
+		"delete",
+		"d",
+		false,
+		"Set this flag to export a command line application",
+	)
+
+
+	exportCmd.MarkFlagRequired("container")
+	exportCmd.MarkFlagsMutuallyExclusive("app", "bin", "service")
+	exportCmd.SetHelpFunc(exportHelp)
+	rootCmd.AddCommand(exportCmd)
+}
+
+func export(cmd *cobra.Command, args []string) error {
+	if utils.IsInsideContainer() {
+		if !utils.IsInsideToolboxContainer() {
+			return errors.New("this is not a toolbox container")
+		}
+
+		if _, err := utils.ForwardToHost(); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	if exportFlags.appName != "" {
+		fmt.Println("exporting application")
+	} else if exportFlags.binaryPath != "" {
+		exportBinary(exportFlags.container, exportFlags.binaryPath, exportFlags.exportPath, exportFlags.deleteMode)
+	} else if exportFlags.serviceName != "" {
+		fmt.Println("export service")
+	} else {
+		return errors.New("please pass --app, --bin or --service")
+	}
+
+	return nil
+}
+
+func exportBinary(container string, binaryPath string, exportPath string, deleteMode bool) {
+	if deleteMode {
+		return
+	}
+
+	var binaryName = path.Base(binaryPath)
+	var shimBinaryPath = path.Join(os.ExpandEnv(exportPath), binaryName)
+	var shellTemplate = fmt.Sprintf(`#!/bin/sh
+toolbox run -c '%s' '%s' %s
+`, container, binaryPath, "")
+
+	if _, err := os.Stat(shimBinaryPath); err == nil {
+		logrus.Errorf("file %s already exists\n", shimBinaryPath)
+	} else if errors.Is(err, os.ErrNotExist) {
+		f, err := os.Create(shimBinaryPath)
+		if err != nil {
+			logrus.Error(err)
+			logrus.Errorf("error creating file '%s'\n", shimBinaryPath)
+		}
+		f.WriteString(shellTemplate)
+		f.Chmod(0755)
+	}
+}
+
+func exportHelp(cmd *cobra.Command, args []string) {
+	if utils.IsInsideContainer() {
+		if !utils.IsInsideToolboxContainer() {
+			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
+			return
+		}
+
+		if _, err := utils.ForwardToHost(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+			return
+		}
+
+		return
+	}
+
+	if err := showManual("toolbox-enter"); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+	}
+}
