@@ -48,8 +48,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: toolbox
+          path: toolbox
       - name: print download file tree
-        run: tree /opt/toolbox
+        run: tree toolbox
       - name: toolbox sanity testing
         run: |
           ./toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
