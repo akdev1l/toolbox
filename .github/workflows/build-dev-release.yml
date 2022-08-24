@@ -44,15 +44,18 @@ jobs:
         run: |
           git submodule init
           git submodule update
+          mkdir -p /tmp/toolbox
       - name: download toolbox artifact
         uses: actions/download-artifact@v3
         with:
           name: toolbox
-      - name: print download file tree
-        run: tree
+          path: /tmp/toolbox
+      - name: print downloaded file tree
+        run: tree /tmp/toolbox
       - name: toolbox sanity testing
         run: |
-          ./bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
-          ./bin/toolbox run -c test-toolbox ls
-          ./bin/toolbox rm -f test-toolbox
+          chmod +x /tmp/toolbox/bin/toolbox
+          /tmp/toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
+          /tmp/toolbox/bin/toolbox run -c test-toolbox ls
+          /tmp/toolbox/bin/toolbox rm -f test-toolbox
 
