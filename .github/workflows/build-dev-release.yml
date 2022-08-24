@@ -48,12 +48,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: toolbox
-          path: toolbox
       - name: print download file tree
-        run: tree toolbox
+        run: tree
       - name: toolbox sanity testing
         run: |
-          ./toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
-          ./toolbox/bin/toolbox run -c test-toolbox ls
-          ./toolbox/bin/toolbox rm -f test-toolbox
+          ./bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
+          ./bin/toolbox run -c test-toolbox ls
+          ./bin/toolbox rm -f test-toolbox
 
