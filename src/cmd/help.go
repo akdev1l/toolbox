@@ -39,15 +39,7 @@ func init() {
 
 func help(cmd *cobra.Command, args []string) error {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			return errors.New("this is not a toolbox container")
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			return err
-		}
-
-		return nil
+		return errors.New("this command is not supported inside a container.")
 	}
 
 	if err := helpShowManual(args); err != nil {
@@ -59,16 +51,7 @@ func help(cmd *cobra.Command, args []string) error {
 
 func helpHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this command is not supported inside a container\n")
 		return
 	}
 

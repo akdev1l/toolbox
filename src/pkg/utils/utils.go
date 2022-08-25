@@ -258,7 +258,7 @@ func ForwardToHost() (int, error) {
 		logrus.Debugf("%s", arg)
 	}
 
-	exitCode, err := shell.RunWithExitCode("flatpak-spawn", os.Stdin, os.Stdout, nil, flatpakSpawnArgs...)
+	exitCode, err := shell.RunWithExitCode([]string{"flatpak-spawn"}, os.Stdin, os.Stdout, nil, flatpakSpawnArgs...)
 	if err != nil {
 		return exitCode, err
 	}
@@ -438,7 +438,7 @@ func GetHostVersionID() (string, error) {
 func GetMountPoint(target string) (string, error) {
 	var stdout strings.Builder
 
-	if err := shell.Run("df", nil, &stdout, nil, "--output=target", target); err != nil {
+	if err := shell.Run([]string{"df"}, nil, &stdout, nil, "--output=target", target); err != nil {
 		return "", err
 	}
 
@@ -457,7 +457,7 @@ func GetMountOptions(target string) (string, error) {
 	var stdout strings.Builder
 	findMntArgs := []string{"--noheadings", "--output", "OPTIONS", target}
 
-	if err := shell.Run("findmnt", nil, &stdout, nil, findMntArgs...); err != nil {
+	if err := shell.Run([]string{"findmnt"}, nil, &stdout, nil, findMntArgs...); err != nil {
 		return "", err
 	}
 

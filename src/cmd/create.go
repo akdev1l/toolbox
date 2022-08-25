@@ -122,18 +122,6 @@ func init() {
 }
 
 func create(cmd *cobra.Command, args []string) error {
-	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			return errors.New("this is not a toolbox container")
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
 	if cmd.Flag("distro").Changed && cmd.Flag("image").Changed {
 		return errors.New("options --distro and --image cannot be used together")
 	}
@@ -425,7 +413,7 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 		"--shell", userShell,
 		"--uid", currentUser.Uid,
 		"--user", currentUser.Username,
-		"--monitor-host",
+		//"--monitor-host",
 	}
 
 	entryPoint = append(entryPoint, slashHomeLink...)
@@ -511,7 +499,7 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 		}
 	}
 
-	if err := shell.Run("podman", nil, nil, nil, createArgs...); err != nil {
+	if err := shell.Run(podman.GetPodman(), nil, nil, nil, createArgs...); err != nil {
 		return fmt.Errorf("failed to create container %s", container)
 	}
 
@@ -528,16 +516,7 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 
 func createHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
 		return
 	}
 

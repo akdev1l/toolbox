@@ -20,13 +20,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"os"
 	"os/exec"
 
 	"github.com/sirupsen/logrus"
 )
 
-func Run(name string, stdin io.Reader, stdout, stderr io.Writer, arg ...string) error {
+func Run(name []string, stdin io.Reader, stdout, stderr io.Writer, arg ...string) error {
 	exitCode, err := RunWithExitCode(name, stdin, stdout, stderr, arg...)
 	if err != nil {
 		return err
@@ -37,13 +38,14 @@ func Run(name string, stdin io.Reader, stdout, stderr io.Writer, arg ...string) 
 	return nil
 }
 
-func RunWithExitCode(name string, stdin io.Reader, stdout, stderr io.Writer, arg ...string) (int, error) {
+func RunWithExitCode(name []string, stdin io.Reader, stdout, stderr io.Writer, arg ...string) (int, error) {
 	logLevel := logrus.GetLevel()
 	if stderr == nil && logLevel >= logrus.DebugLevel {
 		stderr = os.Stderr
 	}
 
-	cmd := exec.Command(name, arg...)
+	cmdName := strings.Join(name, " ")
+	cmd := exec.Command(cmdName, arg...)
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr

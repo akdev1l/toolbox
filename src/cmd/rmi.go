@@ -57,18 +57,6 @@ func init() {
 }
 
 func rmi(cmd *cobra.Command, args []string) error {
-	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			return errors.New("this is not a toolbox container")
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
 	if rmiFlags.deleteAll {
 		toolboxImages, err := getImages()
 		if err != nil {
@@ -110,16 +98,7 @@ func rmi(cmd *cobra.Command, args []string) error {
 
 func rmiHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
 		return
 	}
 

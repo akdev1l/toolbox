@@ -363,16 +363,7 @@ func initContainer(cmd *cobra.Command, args []string) error {
 
 func initContainerHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
 		return
 	}
 
@@ -413,7 +404,7 @@ func configureUsers(targetUserUid int,
 			logrus.Debugf("%s", arg)
 		}
 
-		if err := shell.Run("usermod", nil, nil, nil, usermodArgs...); err != nil {
+		if err := shell.Run([]string{"usermod"}, nil, nil, nil, usermodArgs...); err != nil {
 			return fmt.Errorf("failed to modify user %s with UID %d: %w", targetUser, targetUserUid, err)
 		}
 	} else {
@@ -433,20 +424,20 @@ func configureUsers(targetUserUid int,
 			logrus.Debugf("%s", arg)
 		}
 
-		if err := shell.Run("useradd", nil, nil, nil, useraddArgs...); err != nil {
+		if err := shell.Run([]string{"useradd"}, nil, nil, nil, useraddArgs...); err != nil {
 			return fmt.Errorf("failed to add user %s with UID %d: %w", targetUser, targetUserUid, err)
 		}
 	}
 
 	logrus.Debugf("Removing password for user %s", targetUser)
 
-	if err := shell.Run("passwd", nil, nil, nil, "--delete", targetUser); err != nil {
+	if err := shell.Run([]string{"passwd"}, nil, nil, nil, "--delete", targetUser); err != nil {
 		return fmt.Errorf("failed to remove password for user %s: %w", targetUser, err)
 	}
 
 	logrus.Debug("Removing password for user root")
 
-	if err := shell.Run("passwd", nil, nil, nil, "--delete", "root"); err != nil {
+	if err := shell.Run([]string{"passwd"}, nil, nil, nil, "--delete", "root"); err != nil {
 		return fmt.Errorf("failed to remove password for root: %w", err)
 	}
 
@@ -511,7 +502,7 @@ func mountBind(containerPath, source, flags string) error {
 
 	args = append(args, []string{source, containerPath}...)
 
-	if err := shell.Run("mount", nil, nil, nil, args...); err != nil {
+	if err := shell.Run([]string{"mount"}, nil, nil, nil, args...); err != nil {
 		return fmt.Errorf("failed to bind %s to %s", containerPath, source)
 	}
 
@@ -581,7 +572,7 @@ func redirectPath(containerPath, target string, folder bool) error {
 }
 
 func runUpdateDb() {
-	if err := shell.Run("updatedb", nil, nil, nil); err != nil {
+	if err := shell.Run([]string{"updatedb"}, nil, nil, nil); err != nil {
 		logrus.Warnf("Failed to run updatedb(8): %v", err)
 	}
 }

@@ -24,6 +24,7 @@ import (
 
 	"github.com/HarryMichal/go-version"
 	"github.com/containers/toolbox/pkg/shell"
+	"github.com/containers/toolbox/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,6 +35,17 @@ var (
 var (
 	LogLevel = logrus.ErrorLevel
 )
+
+func GetPodman() []string {
+	if utils.IsInsideContainer() {
+		logrus.Debugf("inside container using podman-remote")
+
+		return []string{"podman-remote"}
+	}
+
+	logrus.Debugf("outside container using regular podman")
+	return []string{"podman"}
+}
 
 // CheckVersion compares provided version with the version of Podman.
 //
@@ -56,7 +68,7 @@ func ContainerExists(container string) (bool, error) {
 	logLevelString := LogLevel.String()
 	args := []string{"--log-level", logLevelString, "container", "exists", container}
 
-	exitCode, err := shell.RunWithExitCode("podman", nil, nil, nil, args...)
+	exitCode, err := shell.RunWithExitCode(GetPodman(), nil, nil, nil, args...)
 	if exitCode != 0 && err == nil {
 		err = fmt.Errorf("failed to find container %s", container)
 	}
@@ -81,7 +93,7 @@ func GetContainers(args ...string) ([]map[string]interface{}, error) {
 	logLevelString := LogLevel.String()
 	args = append([]string{"--log-level", logLevelString, "ps", "--format", "json"}, args...)
 
-	if err := shell.Run("podman", nil, &stdout, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, &stdout, nil, args...); err != nil {
 		return nil, err
 	}
 
@@ -107,7 +119,7 @@ func GetImages(args ...string) ([]map[string]interface{}, error) {
 
 	logLevelString := LogLevel.String()
 	args = append([]string{"--log-level", logLevelString, "images", "--format", "json"}, args...)
-	if err := shell.Run("podman", nil, &stdout, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, &stdout, nil, args...); err != nil {
 		return nil, err
 	}
 
@@ -132,7 +144,7 @@ func GetVersion() (string, error) {
 	logLevelString := LogLevel.String()
 	args := []string{"--log-level", logLevelString, "version", "--format", "json"}
 
-	if err := shell.Run("podman", nil, &stdout, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, &stdout, nil, args...); err != nil {
 		return "", err
 	}
 
@@ -159,7 +171,7 @@ func ImageExists(image string) (bool, error) {
 	logLevelString := LogLevel.String()
 	args := []string{"--log-level", logLevelString, "image", "exists", image}
 
-	exitCode, err := shell.RunWithExitCode("podman", nil, nil, nil, args...)
+	exitCode, err := shell.RunWithExitCode(GetPodman(), nil, nil, nil, args...)
 	if exitCode != 0 && err == nil {
 		err = fmt.Errorf("failed to find image %s", image)
 	}
@@ -180,7 +192,7 @@ func Inspect(typearg string, target string) (map[string]interface{}, error) {
 	logLevelString := LogLevel.String()
 	args := []string{"--log-level", logLevelString, "inspect", "--format", "json", "--type", typearg, target}
 
-	if err := shell.Run("podman", nil, &stdout, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, &stdout, nil, args...); err != nil {
 		return nil, err
 	}
 
@@ -240,7 +252,7 @@ func Pull(imageName string, authfile string) error {
 
 	args = append(args, imageName)
 
-	if err := shell.Run("podman", nil, nil, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, nil, nil, args...); err != nil {
 		return err
 	}
 
@@ -259,7 +271,7 @@ func RemoveContainer(container string, forceDelete bool) error {
 
 	args = append(args, container)
 
-	exitCode, err := shell.RunWithExitCode("podman", nil, nil, nil, args...)
+	exitCode, err := shell.RunWithExitCode(GetPodman(), nil, nil, nil, args...)
 	switch exitCode {
 	case 0:
 		if err != nil {
@@ -292,7 +304,7 @@ func RemoveImage(image string, forceDelete bool) error {
 
 	args = append(args, image)
 
-	exitCode, err := shell.RunWithExitCode("podman", nil, nil, nil, args...)
+	exitCode, err := shell.RunWithExitCode(GetPodman(), nil, nil, nil, args...)
 	switch exitCode {
 	case 0:
 		if err != nil {
@@ -321,7 +333,7 @@ func Start(container string, stderr io.Writer) error {
 	logLevelString := LogLevel.String()
 	args := []string{"--log-level", logLevelString, "start", container}
 
-	if err := shell.Run("podman", nil, nil, stderr, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, nil, stderr, args...); err != nil {
 		return err
 	}
 
@@ -335,7 +347,7 @@ func SystemMigrate(ociRuntimeRequired string) error {
 		args = append(args, []string{"--new-runtime", ociRuntimeRequired}...)
 	}
 
-	if err := shell.Run("podman", nil, nil, nil, args...); err != nil {
+	if err := shell.Run(GetPodman(), nil, nil, nil, args...); err != nil {
 		return err
 	}
 

@@ -20,11 +20,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
 
-	"github.com/containers/toolbox/pkg/podman"
 	"github.com/containers/toolbox/pkg/utils"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -53,7 +50,6 @@ func init() {
 	flags.StringVarP(&exportFlags.container,
 		"container",
 		"c",
-		"",
 		"container name",
 	)
 	flags.StringVarP(&exportFlags.appName,
@@ -77,7 +73,7 @@ func init() {
 	flags.StringVarP(&exportFlags.exportPath,
 		"export-path",
 		"p",
-		"$HOME/.local/bin",
+		"~/.local/bin",
 		"Path to export binary applications",
 	)
 	flags.StringVarP(&exportFlags.extraFlags,
@@ -101,10 +97,22 @@ func init() {
 }
 
 func export(cmd *cobra.Command, args []string) error {
+	if utils.IsInsideContainer() {
+		if !utils.IsInsideToolboxContainer() {
+			return errors.New("this is not a toolbox container")
+		}
+
+		if _, err := utils.ForwardToHost(); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	if exportFlags.appName != "" {
 		fmt.Println("exporting application")
 	} else if exportFlags.binaryPath != "" {
-		exportBinary(exportFlags.container, exportFlags.binaryPath, exportFlags.exportPath, exportFlags.deleteMode)
+		exportBinary(exportFlags.binaryPath, exportFlags.exportPath, exportFlags.deleteMode)
 	} else if exportFlags.serviceName != "" {
 		fmt.Println("export service")
 	} else {
@@ -114,45 +122,26 @@ func export(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func exportBinary(container string, binaryPath string, exportPath string, deleteMode bool) {
-	var binaryName = path.Base(binaryPath)
-	var shimBinaryPath = path.Join(os.ExpandEnv(exportPath), binaryName)
-	var shellTemplate = fmt.Sprintf(`#!/bin/sh
-toolbox run -c '%s' '%s' %s
-`, container, binaryPath, "")
-
+func exportBinary(binaryPath string, exportPath string, deleteMode bool) {
 	if deleteMode {
-		if _, err := os.Stat(shimBinaryPath); err == nil {
-			logrus.Infof("removing binary shim located at %s", shimBinaryPath)
-			os.Remove(shimBinaryPath)
-		} else if errors.Is(err, os.ErrNotExist) {
-			logrus.Warnf("shim binary not found at %s - skipping.", shimBinaryPath)
-		}
-
 		return
 	}
 
-
-	if _, err := os.Stat(shimBinaryPath); err == nil {
-		logrus.Errorf("file %s already exists", shimBinaryPath)
-	} else if errors.Is(err, os.ErrNotExist) {
-		if containerExists, err := podman.ContainerExists(container); containerExists && err == nil {
-			f, err := os.Create(shimBinaryPath)
-			if err != nil {
-				logrus.Error(err)
-				logrus.Errorf("error creating file '%s'", shimBinaryPath)
-			}
-			f.WriteString(shellTemplate)
-			f.Chmod(0755)
-		} else {
-			logrus.Errorf("container '%s' does not exist", container)
-		}
-	}
+	fmt.Printf("exporting '%s' to %s...\n", binaryPath, exportPath)
 }
 
 func exportHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
+		if !utils.IsInsideToolboxContainer() {
+			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
+			return
+		}
+
+		if _, err := utils.ForwardToHost(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+			return
+		}
+
 		return
 	}
 

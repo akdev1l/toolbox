@@ -86,17 +86,6 @@ func init() {
 }
 
 func list(cmd *cobra.Command, args []string) error {
-	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			return errors.New("this is not a toolbox container")
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			return err
-		}
-
-		return nil
-	}
 
 	lsContainers := true
 	lsImages := true
@@ -173,16 +162,7 @@ func getContainers() ([]toolboxContainer, error) {
 
 func listHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
 		return
 	}
 

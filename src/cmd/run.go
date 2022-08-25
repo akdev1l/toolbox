@@ -92,18 +92,6 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			return errors.New("this is not a toolbox container")
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
 	var defaultContainer bool = true
 
 	if runFlags.container != "" {
@@ -337,12 +325,12 @@ func runCommandWithFallbacks(container string, command []string, emitEscapeSeque
 		}
 
 		logrus.Debugf("Running in container %s:", container)
-		logrus.Debug("podman")
+
 		for _, arg := range execArgs {
 			logrus.Debugf("%s", arg)
 		}
 
-		exitCode, err := shell.RunWithExitCode("podman", os.Stdin, os.Stdout, os.Stderr, execArgs...)
+		exitCode, err := shell.RunWithExitCode(podman.GetPodman(), os.Stdin, os.Stdout, os.Stderr, execArgs...)
 
 		if emitEscapeSequence {
 			fmt.Printf("\033]777;container;pop;;;%s\033\\", currentUser.Uid)
@@ -403,16 +391,7 @@ func runCommandWithFallbacks(container string, command []string, emitEscapeSeque
 
 func runHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
+		fmt.Fprintf(os.Stderr, "Error: this is not supported in a container.\n")
 		return
 	}
 
@@ -542,7 +521,7 @@ func isCommandPresent(container, command string) (bool, error) {
 		"sh", "-c", "command -v \"$1\"", "sh", command,
 	}
 
-	if err := shell.Run("podman", nil, nil, nil, args...); err != nil {
+	if err := shell.Run([]string{"podman"}, nil, nil, nil, args...); err != nil {
 		return false, err
 	}
 
@@ -561,7 +540,7 @@ func isPathPresent(container, path string) (bool, error) {
 		"sh", "-c", "test -d \"$1\"", "sh", path,
 	}
 
-	if err := shell.Run("podman", nil, nil, nil, args...); err != nil {
+	if err := shell.Run([]string{"podman"}, nil, nil, nil, args...); err != nil {
 		return false, err
 	}
 
