@@ -23,7 +23,6 @@ import (
 	"path"
 
 	"github.com/containers/toolbox/pkg/podman"
-	"github.com/containers/toolbox/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -151,11 +150,6 @@ toolbox run -c '%s' '%s' %s
 }
 
 func exportHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
-		return
-	}
-
 	if err := showManual("toolbox-enter"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}

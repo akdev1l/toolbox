@@ -161,11 +161,6 @@ func getContainers() ([]toolboxContainer, error) {
 }
 
 func listHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
-		return
-	}
-
 	if err := showManual("toolbox-list"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		return

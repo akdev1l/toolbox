@@ -530,11 +530,6 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 }
 
 func createHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
-		return
-	}
-
 	if err := showManual("toolbox-create"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		return

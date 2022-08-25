@@ -390,11 +390,6 @@ func runCommandWithFallbacks(container string, command []string, emitEscapeSeque
 }
 
 func runHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported in a container.\n")
-		return
-	}
-
 	if err := showManual("toolbox-run"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		return

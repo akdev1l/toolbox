@@ -23,7 +23,6 @@ import (
 	"strings"
 
 	"github.com/containers/toolbox/pkg/podman"
-	"github.com/containers/toolbox/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -97,11 +96,6 @@ func rmi(cmd *cobra.Command, args []string) error {
 }
 
 func rmiHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
-		return
-	}
-
 	if err := showManual("toolbox-rmi"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		return

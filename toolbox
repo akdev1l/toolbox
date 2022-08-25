@@ -29,8 +29,8 @@ exec podman run \
     -e USER \
     -w $PWD \
     -v /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket  \
-    -v /run/user/1000/podman:/run/user/1000/podman \
+    -v /run/user/$(id -u)/podman:/run/user/$(id -u)/podman \
     -v "$XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR" \
     -v "$HOME:$HOME" \
     -v "$PWD:$PWD" \
-    toolbox:latest "$@"
+    docker.io/akdev1l/toolbox:slim "$@"

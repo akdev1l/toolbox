@@ -17,11 +17,9 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
-	"github.com/containers/toolbox/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -38,10 +36,6 @@ func init() {
 }
 
 func help(cmd *cobra.Command, args []string) error {
-	if utils.IsInsideContainer() {
-		return errors.New("this command is not supported inside a container.")
-	}
-
 	if err := helpShowManual(args); err != nil {
 		return err
 	}
@@ -50,11 +44,6 @@ func help(cmd *cobra.Command, args []string) error {
 }
 
 func helpHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this command is not supported inside a container\n")
-		return
-	}
-
 	if err := helpShowManual(args); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		return
