@@ -3,6 +3,8 @@ name: dev-build
 on:
   push:
     branch: akdev
+    paths:
+      - "src/**"
 
 jobs:
   build:

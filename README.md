@@ -1,10 +1,8 @@
 ![README](data/gfx/README.gif)
 
-[![Zuul](https://zuul-ci.org/gated.svg)](https://softwarefactory-project.io/zuul/t/local/builds?project=containers/toolbox)
-[![Daily Pipeline](https://softwarefactory-project.io/zuul/api/tenant/local/badge?project=containers/toolbox&pipeline=periodic)](https://softwarefactory-project.io/zuul/t/local/builds?project=containers%2Ftoolbox&pipeline=periodic)
+[![dev-build](https://github.com/akdev1l/toolbox/actions/workflows/build-dev-release.yml/badge.svg)](https://github.com/akdev1l/toolbox/actions/workflows/build-dev-release.yml)
 
-[![Arch Linux package](https://img.shields.io/archlinux/v/community/x86_64/toolbox)](https://www.archlinux.org/packages/community/x86_64/toolbox/)
-[![Fedora package](https://img.shields.io/fedora/v/toolbox/rawhide)](https://src.fedoraproject.org/rpms/toolbox/)
+**This is an unofficial fork not related to the original project**
 
 [Toolbox](https://containertoolbx.org/) is a tool for Linux operating systems,
 which allows the use of containerized command line environments. It is built
