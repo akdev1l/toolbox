@@ -366,7 +366,7 @@ func setUpGlobals() error {
 func setUpLoggers() error {
 	logrus.SetOutput(os.Stderr)
 	logrus.SetFormatter(&logrus.TextFormatter{
-		DisableTimestamp: true,
+		FullTimestamp: true,
 	})
 
 	if rootFlags.verbose > 0 {
@@ -374,6 +374,8 @@ func setUpLoggers() error {
 	}
 
 	logLevel, err := logrus.ParseLevel(rootFlags.logLevel)
+	logrus.SetReportCaller(logLevel == logrus.DebugLevel)
+
 	if err != nil {
 		return fmt.Errorf("failed to parse log-level: %w", err)
 	}

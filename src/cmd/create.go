@@ -49,6 +49,7 @@ var (
 		release   string
 		temporary bool
 		enter     bool
+		isolatedHome  bool
 	}
 
 	createToolboxShMounts = []struct {
@@ -108,6 +109,11 @@ func init() {
 		"e",
 		false,
 		"Enter to toolbox container immediately")
+	flags.BoolVarP(&createFlags.isolatedHome,
+		"isolated-home",
+		"m",
+		false,
+		"Give the container an isolated home directory")
 
 	createCmd.SetHelpFunc(createHelp)
 
@@ -305,6 +311,15 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 	logrus.Debugf("%s canonicalized to %s", currentUser.HomeDir, homeDirEvaled)
 	homeDirMountArg := homeDirEvaled + ":" + homeDirEvaled + ":rslave"
 
+	if createFlags.isolatedHome {
+		toolboxIsolatedHomeDir := homeDirEvaled + "/.local/share/toolbox/" + container
+		logrus.Infof("creating container with isolated home directory at %s", toolboxIsolatedHomeDir)
+		if err := os.MkdirAll(toolboxIsolatedHomeDir, 0755); err != nil {
+			return fmt.Errorf("could not create isolated home directory: %s", toolboxIsolatedHomeDir)
+		}
+		homeDirMountArg = toolboxIsolatedHomeDir + ":" + homeDirEvaled + ":rslave"
+	}
+
 	var avahiSocketMount []string
 
 	avahiSocket, err := getServiceSocket("Avahi", "avahi-daemon.socket")
@@ -413,7 +428,7 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 		"--shell", userShell,
 		"--uid", currentUser.Uid,
 		"--user", currentUser.Username,
-		//"--monitor-host",
+		"--monitor-host",
 	}
 
 	entryPoint = append(entryPoint, slashHomeLink...)
