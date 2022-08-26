@@ -1,4 +1,4 @@
-name: build kalilinux toolbox container images
+name: build kalilinux toolbox container image
 
 on:
   push:
