@@ -1,0 +1,29 @@
+name: build centos toolbox container images
+
+on:
+  push:
+    branches: [ "akdev" ]
+    paths: ["images/centos/**"]
+
+env:
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+  TOOLBOX_REPO: registry.hub.docker.com/${{ github.repository_owner }}
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        version: [8]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Log in to ghcr.io
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ env.REGISTRY_PASSWORD }}
+        registry: ${{ env.TOOLBOX_REPO }}
+
+    - name: publish toolbox container images
+      run: ./ci/util/publish.sh centos/${{ matrix.version }}
