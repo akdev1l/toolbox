@@ -70,7 +70,6 @@ func init() {
 		logrus.Panicf("failed to register flag completion function: %v", err)
 	}
 
-	enterCmd.SetHelpFunc(enterHelp)
 	rootCmd.AddCommand(enterCmd)
 }
 
@@ -164,11 +163,4 @@ func enter(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func enterHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-enter"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
 }

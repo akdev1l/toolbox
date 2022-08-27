@@ -51,7 +51,6 @@ func init() {
 		false,
 		"Force the removal of running and paused toolbox containers")
 
-	rmCmd.SetHelpFunc(rmHelp)
 	rootCmd.AddCommand(rmCmd)
 }
 
@@ -93,11 +92,4 @@ func rm(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func rmHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-rm"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
 }

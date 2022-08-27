@@ -115,8 +115,6 @@ func init() {
 		false,
 		"Give the container an isolated home directory")
 
-	createCmd.SetHelpFunc(createHelp)
-
 	if err := createCmd.RegisterFlagCompletionFunc("distro", completionDistroNames); err != nil {
 		logrus.Panicf("failed to register flag completion function: %v", err)
 	}
@@ -527,13 +525,6 @@ func createContainer(container, image, release string, showCommandToEnter bool) 
 	}
 
 	return nil
-}
-
-func createHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-create"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
 }
 
 func getDBusSystemSocket() (string, error) {

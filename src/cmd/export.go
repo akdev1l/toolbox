@@ -95,7 +95,6 @@ func init() {
 
 	exportCmd.MarkFlagRequired("container")
 	exportCmd.MarkFlagsMutuallyExclusive("app", "bin", "service")
-	exportCmd.SetHelpFunc(exportHelp)
 	rootCmd.AddCommand(exportCmd)
 }
 
@@ -146,11 +145,5 @@ toolbox run -c '%s' '%s' %s
 		} else {
 			logrus.Errorf("container '%s' does not exist", container)
 		}
-	}
-}
-
-func exportHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-enter"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}
 }

@@ -140,7 +140,6 @@ func init() {
 		panic("Could not mark flag --user as required")
 	}
 
-	initContainerCmd.SetHelpFunc(initContainerHelp)
 	rootCmd.AddCommand(initContainerCmd)
 }
 
@@ -358,18 +357,6 @@ func initContainer(cmd *cobra.Command, args []string) error {
 		case err := <-watcherForHost.Errors:
 			logrus.Warnf("Received an error from the file system watcher: %v", err)
 		}
-	}
-}
-
-func initContainerHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		fmt.Fprintf(os.Stderr, "Error: this is not supported inside container.\n")
-		return
-	}
-
-	if err := showManual("toolbox-init-container"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
 	}
 }
 

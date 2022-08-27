@@ -81,7 +81,6 @@ func init() {
 		false,
 		"List only toolbox images, not containers")
 
-	listCmd.SetHelpFunc(listHelp)
 	rootCmd.AddCommand(listCmd)
 }
 
@@ -158,13 +157,6 @@ func getContainers() ([]toolboxContainer, error) {
 	}
 
 	return toolboxContainers, nil
-}
-
-func listHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-list"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
 }
 
 func getImages() ([]toolboxImage, error) {

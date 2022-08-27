@@ -79,8 +79,6 @@ func init() {
 		0,
 		"Forward this many file descriptors (starting from fd 3)")
 
-	runCmd.SetHelpFunc(runHelp)
-
 	if err := runCmd.RegisterFlagCompletionFunc("container", completionContainerNames); err != nil {
 		logrus.Panicf("failed to register flag completion function: %v", err)
 	}
@@ -386,13 +384,6 @@ func runCommandWithFallbacks(container string, command []string, emitEscapeSeque
 		default:
 			return &exitError{exitCode, nil}
 		}
-	}
-}
-
-func runHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-run"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
 	}
 }
 

@@ -51,7 +51,6 @@ func init() {
 		false,
 		"Force the removal of running and paused toolbox containers")
 
-	rmiCmd.SetHelpFunc(rmiHelp)
 	rootCmd.AddCommand(rmiCmd)
 }
 
@@ -93,11 +92,4 @@ func rmi(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func rmiHelp(cmd *cobra.Command, args []string) {
-	if err := showManual("toolbox-rmi"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
 }
