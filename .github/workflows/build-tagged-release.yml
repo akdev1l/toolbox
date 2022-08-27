@@ -1,0 +1,86 @@
+name: tagged-build
+
+on:
+  push:
+    branch: akdev
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: build binaries
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:36
+    steps:
+      - uses: actions/checkout@v2
+      - name: install build dependencies
+        run: dnf install -y go meson go-md2man ShellCheck fish cmake podman
+      - name: create build dir
+        run: mkdir -p build
+      - name: configure meson project
+        run: meson setup build . -Dinstall_completions=false
+      - name: run ninja build
+        run: ninja -C build
+      - name: install for packaging purposes
+        run: ninja -C build install
+      - name: quick sanity test
+        run: /usr/local/bin/toolbox --version
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolbox
+          path: /usr/local
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolbox-bin
+          path: /usr/local/bin/toolbox
+
+  test:
+    name: sanity test on ubuntu-latest
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - name: downloading necessary packages
+        run: sudo apt-get install -y podman bats git
+      - name: initialize submodules
+        run: |
+          git submodule init
+          git submodule update
+          mkdir -p /tmp/toolbox
+      - name: download toolbox artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox
+          path: /tmp/toolbox
+      - name: print downloaded file tree
+        run: tree /tmp/toolbox
+      - name: toolbox sanity testing
+        env:
+          SHELL: /bin/bash
+        run: |
+          set -x
+          chmod +x /tmp/toolbox/bin/toolbox
+          podman pull docker.io/akdev1l/centos-toolbox:8
+          /tmp/toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
+          /tmp/toolbox/bin/toolbox run -c test-toolbox ls
+          /tmp/toolbox/bin/toolbox rm -f test-toolbox
+
+  release:
+    name: create release archive
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: create github release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: v${{ github.ref }}
+          body: |
+	    testing automated release process
+          draft: true
+          prerelease: true
