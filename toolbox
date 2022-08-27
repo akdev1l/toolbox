@@ -14,23 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+TOOLBOX_IMAGE="docker.io/akdev1l/toolbox:slim"
+TMP_TOOLBOX_PATH="/run/user/$(id -u)/toolbox"
 
-export TOOLBOX_PATH="$(realpath "${BASH_SOURCE[0]}")"
 
-exec podman run \
-    --rm \
-    -it \
-    --security-opt label=disable \
-    --userns=keep-id  \
-    -e XDG_RUNTIME_DIR  \
-    -e TOOLBOX_PATH \
-    -e HOME \
-    -e SHELL \
-    -e USER \
-    -w $PWD \
-    -v /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket  \
-    -v /run/user/$(id -u)/podman:/run/user/$(id -u)/podman \
-    -v "$XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR" \
-    -v "$HOME:$HOME" \
-    -v "$PWD:$PWD" \
-    docker.io/akdev1l/toolbox:slim "$@"
+if ! podman image exists "${TOOLBOX_IMAGE}"; then
+	podman pull "${TOOLBOX_IMAGE}"
+fi
+
+if ! [ -f "${TMP_TOOLBOX_PATH}/bin/toolbox" ]; then
+	PODMAN_IMAGE_PATH="$(podman unshare podman image mount "${TOOLBOX_IMAGE}")"
+	podman unshare cp -rp "${PODMAN_IMAGE_PATH}/usr/local/bin" "${TMP_TOOLBOX_PATH}"
+	echo "toolbox temporarily installed to ${TMP_TOOLBOX_PATH}/bin/toolbox"
+fi
+
+exec "${TMP_TOOLBOX_PATH}/bin/toolbox" "$@"
