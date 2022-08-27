@@ -1,6 +1,9 @@
 Overview of changes in 0.0.99.4-akdev
 ===============================
-* Fix DNS resolution bugs by assigning each toolbox a resolvable hostname
+* core: Fix DNS resolution bugs by assigning each toolbox a resolvable hostname
+* core: removed rpath binary patching and enable static build to generate more portable binary
+* toolbox-create(exp): Isolated home support via `--isolated-home`
+* toolbox-create(exp): Ephemeral toolboxes via `--temporary`
 
 
 Overview of changes in 0.0.99.3
