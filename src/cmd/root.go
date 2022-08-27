@@ -47,7 +47,6 @@ var (
 		Use:               "toolbox",
 		Short:             "Tool for containerized command line environments on Linux",
 		PersistentPreRunE: preRun,
-		RunE:              rootRun,
 		Version:           version.GetVersion(),
 	}
 
@@ -157,10 +156,6 @@ func preRun(cmd *cobra.Command, args []string) error {
 
 	if toolboxPath == "" {
 		if utils.IsInsideContainer() {
-			if err := preRunIsCoreOSBug(); err != nil {
-				return err
-			}
-
 			return errors.New("TOOLBOX_PATH not set")
 		}
 
@@ -179,42 +174,6 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-/*
-func rootHelp(cmd *cobra.Command, args []string) {
-	if utils.IsInsideContainer() {
-		if !utils.IsInsideToolboxContainer() {
-			fmt.Fprintf(os.Stderr, "Error: this is not a toolbox container\n")
-			return
-		}
-
-		if _, err := utils.ForwardToHost(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-			return
-		}
-
-		return
-	}
-
-	manual := "toolbox"
-
-	for _, arg := range args {
-		if !strings.HasPrefix(arg, "-") {
-			manual = manual + "-" + arg
-			break
-		}
-	}
-
-	if err := showManual(manual); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return
-	}
-}
-
-*/
-func rootRun(cmd *cobra.Command, args []string) error {
-	return rootRunImpl(cmd, args)
 }
 
 func migrate() error {
