@@ -454,12 +454,13 @@ func constructExecArgs(container string,
 		execArgs = append(execArgs, "--preserve-fds="+strconv.Itoa(runFlags.preserve_fds))
 	}
 
+	// This weird redirection is needed to return the actual exit code of the command
 	execArgs = append(execArgs, []string{
 		container,
-		"capsh", "--caps=", "--", "-c",
+		"capsh", "--caps=", "--", "-c", "exec \"$@\"", "/bin/sh",
 	}...)
 
-	execArgs = append(execArgs, fmt.Sprintf("exec %s", strings.Join(command, " ")))
+	execArgs = append(execArgs, command...)
 
 	return execArgs
 }

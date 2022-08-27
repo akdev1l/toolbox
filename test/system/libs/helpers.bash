@@ -24,6 +24,8 @@ readonly SKOPEO=${SKOPEO:-$(command -v skopeo)}
 
 # Images
 declare -Ag IMAGES=([busybox]="quay.io/toolbox_tests/busybox" \
+                   [centos]="docker.io/akdev1l/centos-toolbox" \
+                   [ubuntu]="docker.io/akdev1l/ubuntu-toolbox" \
                    [docker-reg]="quay.io/toolbox_tests/registry" \
                    [fedora]="registry.fedoraproject.org/fedora-toolbox" \
                    [rhel]="registry.access.redhat.com/ubi8/toolbox")
@@ -93,7 +95,7 @@ function _pull_and_cache_distro_image() {
 
   if [[ $# -eq 2 ]]; then
     image="${image}:${version}"
-    image_archive="${image_archive}-${version}"
+    image_archive="${image_archive}:${version}"
   fi
 
   if [[ -d ${IMAGE_CACHE_DIR}/${image_archive} ]] ; then
@@ -207,7 +209,7 @@ function _setup_docker_registry() {
 
   # Add fedora-toolbox:32 image to the registry
   run $SKOPEO copy --dest-authfile ${TEMP_BASE_DIR}/authfile.json \
-    dir:"${IMAGE_CACHE_DIR}"/fedora-toolbox-32 \
+    dir:"${IMAGE_CACHE_DIR}"/fedora-toolbox:32 \
     docker://"${DOCKER_REG_URI}"/fedora-toolbox:32
   assert_success
 
@@ -258,7 +260,7 @@ function pull_distro_image() {
 
   if [[ -n $version ]]; then
     image="${image}:${version}"
-    image_archive="${image_archive}-${version}"
+    image_archive="${image_archive}:${version}"
   fi
 
   # No need to copy if the image is already available in Podman
@@ -430,7 +432,7 @@ function get_system_id() {
     return
   fi
 
-  echo $(awk -F= '/ID/ {print $2}' $os_release | head -n 1)
+  echo $(awk -F= '/ID/ {print $2}' $os_release | head -n 1 | tr -d '"')
 }
 
 
@@ -445,7 +447,7 @@ function get_system_version() {
     return
   fi
 
-  echo $(awk -F= '/VERSION_ID/ {print $2}' $os_release | head -n 1)
+  echo $(awk -F= '/VERSION_ID/ {print $2}' $os_release | head -n 1 | tr -d '"')
 }
 
 

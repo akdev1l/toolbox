@@ -11,5 +11,6 @@ setup() {
 @test "version: Check version using option --version" {
   run $TOOLBOX --version
 
-  assert_output --regexp '^toolbox version [0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$'
+  assert_output --regexp '^toolbox version [0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-akdev$'
+
 }

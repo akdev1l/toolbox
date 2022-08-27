@@ -62,7 +62,7 @@ teardown() {
   assert_failure
   assert_line --index 0 "Error: invalid argument for '--distro'"
   # Distro names are in a hashtable and thus the order can change
-  assert_line --index 1 --regexp "Supported values are: (.?(fedora|rhel))+"
+  assert_line --index 1 --regexp "Supported values are: (.?(alpine|archlinux|kalilinux|gentoo|fedora|rhel|ubuntu|centos))+"
   assert_line --index 2 "Run 'toolbox --help' for usage."
   assert [ ${#lines[@]} -eq 3 ]
 }

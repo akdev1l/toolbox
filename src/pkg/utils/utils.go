@@ -129,7 +129,7 @@ var (
 		"centos": {
 			"centos-toolbox",
 			"centos-toolbox",
-			parseUbuntuRelease,
+			parseCentOSRelease,
 			"centos-toolbox:<major>",
 			"docker.io/akdev1l",
 			"",
@@ -748,6 +748,14 @@ func parseReleaseRHEL(release string) (string, error) {
 	}
 
 	return release, nil
+}
+
+func parseCentOSRelease(release string) (string, error) {
+	if release == "8" {
+		return release, nil
+	}
+
+	return "", errors.New("only release version 8 supported at the moment")
 }
 
 func parseUbuntuRelease(release string) (string, error) {
