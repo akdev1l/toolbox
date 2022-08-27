@@ -120,10 +120,10 @@ func init() {
 		logrus.Panicf("failed to register flag completion function: %v", err)
 	}
 
-	rootCmd.SetHelpFunc(rootHelp)
+	//rootCmd.SetHelpFunc(rootHelp)
 
-	usageTemplate := fmt.Sprintf("Run '%s --help' for usage.", executableBase)
-	rootCmd.SetUsageTemplate(usageTemplate)
+	//usageTemplate := fmt.Sprintf("Run '%s --help' for usage.", executableBase)
+	//rootCmd.SetUsageTemplate(usageTemplate)
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
@@ -181,6 +181,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+/*
 func rootHelp(cmd *cobra.Command, args []string) {
 	if utils.IsInsideContainer() {
 		if !utils.IsInsideToolboxContainer() {
@@ -211,6 +212,7 @@ func rootHelp(cmd *cobra.Command, args []string) {
 	}
 }
 
+*/
 func rootRun(cmd *cobra.Command, args []string) error {
 	return rootRunImpl(cmd, args)
 }
