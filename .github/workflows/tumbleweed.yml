@@ -3,7 +3,7 @@ name: build tumbleweed-toolbox container image
 on:
   push:
     branches: [ "akdev" ]
-    paths: ["imges/tumbleweed/**"]
+    paths: ["images/tumbleweed/**"]
 
 env:
   REGISTRY_USER: ${{ github.actor }}
