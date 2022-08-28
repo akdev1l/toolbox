@@ -20,9 +20,9 @@ jobs:
       - name: install build dependencies
         run: dnf install -y go meson go-md2man ShellCheck fish cmake podman
       - name: configure meson project
-        run: meson builddir
+        run: meson builddir -Dinstall_completions=false
       - name: run ninja build
-        run: ninja -C builddir -Dinstall_completions=false
+        run: ninja -C builddir
       - name: install for packaging purposes
         run: ninja -C builddir install
       - name: quick sanity test
