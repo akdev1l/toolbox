@@ -93,7 +93,6 @@ func init() {
 	)
 
 	exportCmd.MarkFlagRequired("container")
-	exportCmd.MarkFlagsMutuallyExclusive("app", "bin", "service")
 	rootCmd.AddCommand(exportCmd)
 }
 
