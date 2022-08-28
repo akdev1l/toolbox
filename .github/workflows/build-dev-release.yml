@@ -44,7 +44,7 @@ jobs:
       - name: install ansible
         run: sudo apt install -y ansible && ls
       - name: setup testing environment
-        run: ansible-playbook toolbox/playbooks/setup-env.yml
+        run: ansible-playbook playbooks/setup-env.yaml
       - name: download toolbox artifact
         uses: actions/download-artifact@v3
         with:
@@ -56,5 +56,5 @@ jobs:
         env:
           SHELL: /bin/bash
         run: chmod +x /usr/local/bin/toolbox
-      - name: run system-test.yml
-        run: ansible-playbook toolbox/playbooks/system-test.yml
+      - name: run system-test.yaml
+        run: ansible-playbook playbooks/system-test.yaml
