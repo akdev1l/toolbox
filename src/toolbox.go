@@ -16,7 +16,7 @@
 
 package main
 
-import "github.com/containers/toolbox/cmd"
+import "github.com/akdev1l/toolbox/cmd"
 
 func main() {
 	cmd.Execute()

@@ -23,8 +23,8 @@ import (
 	"io"
 
 	"github.com/HarryMichal/go-version"
-	"github.com/containers/toolbox/pkg/shell"
-	"github.com/containers/toolbox/pkg/utils"
+	"github.com/akdev1l/toolbox/pkg/shell"
+	"github.com/akdev1l/toolbox/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 

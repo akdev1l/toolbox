@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/toolbox/pkg/shell"
-	"github.com/containers/toolbox/pkg/utils"
+	"github.com/akdev1l/toolbox/pkg/shell"
+	"github.com/akdev1l/toolbox/pkg/utils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

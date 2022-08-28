@@ -27,9 +27,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/containers/toolbox/pkg/podman"
-	"github.com/containers/toolbox/pkg/utils"
-	"github.com/containers/toolbox/pkg/version"
+	"github.com/akdev1l/toolbox/pkg/podman"
+	"github.com/akdev1l/toolbox/pkg/utils"
+	"github.com/akdev1l/toolbox/pkg/version"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

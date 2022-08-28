@@ -73,7 +73,7 @@ export CGO_ENABLED=0
 go build \
         $tags \
         -trimpath \
-	-ldflags "-X github.com/containers/toolbox/pkg/version.currentVersion=$3" \
+	-ldflags "-X github.com/akdev1l/toolbox/pkg/version.currentVersion=$3" \
         -o "$2/toolbox"
 
 exit "$?"
