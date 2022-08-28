@@ -5,6 +5,8 @@ on:
     branch: akdev
     paths:
       - "src/**"
+      - "playbooks/**"
+      - "test/**"
 
 jobs:
   build:
@@ -16,12 +18,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: install build dependencies
         run: dnf install -y go meson go-md2man ShellCheck fish cmake podman
-      - name: create build dir
-        run: mkdir -p build
       - name: configure meson project
-        run: meson setup build . -Dinstall_completions=false
+        run: meson builddir
       - name: run ninja build
-        run: ninja -C build
+        run: ninja -C builddir build test
       - name: install for packaging purposes
         run: ninja -C build install
       - name: quick sanity test
@@ -40,28 +40,20 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-      - name: downloading necessary packages
-        run: sudo apt-get install -y podman bats git
-      - name: initialize submodules
-        run: |
-          git submodule init
-          git submodule update
-          mkdir -p /tmp/toolbox
+      - name: install ansible
+        run: apt install -y ansible
+      - name: setup testing environment
+        run: ansible-playbook playbooks/setup-env.yml
       - name: download toolbox artifact
         uses: actions/download-artifact@v3
         with:
           name: toolbox
-          path: /tmp/toolbox
+          path: /usr/local
       - name: print downloaded file tree
-        run: tree /tmp/toolbox
-      - name: toolbox sanity testing
+        run: tree /usr/local
+      - name: make sure toolbox binary is executable
         env:
           SHELL: /bin/bash
-        run: |
-          set -x
-          chmod +x /tmp/toolbox/bin/toolbox
-          podman pull docker.io/akdev1l/centos-toolbox:8
-          /tmp/toolbox/bin/toolbox create -i docker.io/akdev1l/centos-toolbox:8 test-toolbox
-          /tmp/toolbox/bin/toolbox run -c test-toolbox ls
-          /tmp/toolbox/bin/toolbox rm -f test-toolbox
-
+        run: chmod +x /usr/local/bin/toolbox
+      - name: run system-test.yml
+        run: ansible-playbook playbooks/system-test.yml

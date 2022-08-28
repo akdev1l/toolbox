@@ -6,5 +6,3 @@
       environment:
         PODMAN: '/usr/bin/podman'
         TOOLBOX: '/usr/local/bin/toolbox'
-      args:
-        chdir: '{{ zuul.project.src_dir }}'

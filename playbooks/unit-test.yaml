@@ -3,5 +3,3 @@
   tasks:
     - name: Test
       command: ninja -C builddir test
-      args:
-        chdir: '{{ zuul.project.src_dir }}'

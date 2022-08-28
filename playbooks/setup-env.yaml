@@ -4,15 +4,15 @@
     - name: Install requirements
       become: yes
       package:
-        use: dnf
+        use: apt
         name:
-          - ShellCheck
+          - shellcheck
           - bash-completion
           - bats
-          - flatpak-session-helper
+          - flatpak
           - golang
-          - golang-github-cpuguy83-md2man
-          - httpd-tools
+          - golang-github-cpuguy83-md2man-v2-dev
+          - apache2-utils
           - meson
           - ninja-build
           - openssl
@@ -25,11 +25,6 @@
       shell: |
         git submodule init
         git submodule update
-      args:
-        chdir: '{{ zuul.project.src_dir }}'
-
-    - name: Check versions of crucial packages
-      command: rpm -qa *kernel* *glibc* golang podman conmon containernetworking-plugins containers-common container-selinux crun runc fuse-overlayfs flatpak-session-helper
 
     - name: Show podman versions
       command: podman version
@@ -39,18 +34,14 @@
 
     - name: Set up build directory
       command: meson builddir
-      args:
-        chdir: '{{ zuul.project.src_dir }}'
 
     - name: Build Toolbox
       command: ninja -C builddir
       args:
-        chdir: '{{ zuul.project.src_dir }}'
         creates: builddir/src/toolbox
 
     - name: Install Toolbox
       become: yes
       command: ninja -C builddir install
       args:
-        chdir: '{{ zuul.project.src_dir }}'
         creates: /usr/local/bin/toolbox
