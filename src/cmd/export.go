@@ -29,13 +29,13 @@ import (
 
 var (
 	exportFlags struct {
-		container string
-		appName string
+		container   string
+		appName     string
 		serviceName string
-		binaryPath string
-		extraFlags string
-		deleteMode bool
-		exportPath string
+		binaryPath  string
+		extraFlags  string
+		deleteMode  bool
+		exportPath  string
 	}
 )
 
@@ -92,7 +92,6 @@ func init() {
 		"Set this flag to export a command line application",
 	)
 
-
 	exportCmd.MarkFlagRequired("container")
 	exportCmd.MarkFlagsMutuallyExclusive("app", "bin", "service")
 	rootCmd.AddCommand(exportCmd)
@@ -129,7 +128,6 @@ toolbox run -c '%s' '%s' %s
 
 		return
 	}
-
 
 	if _, err := os.Stat(shimBinaryPath); err == nil {
 		logrus.Errorf("file %s already exists", shimBinaryPath)

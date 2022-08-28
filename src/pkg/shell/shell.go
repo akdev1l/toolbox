@@ -20,9 +20,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )

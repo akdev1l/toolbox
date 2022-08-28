@@ -42,14 +42,14 @@ const (
 
 var (
 	createFlags struct {
-		authFile  string
-		container string
-		distro    string
-		image     string
-		release   string
-		temporary bool
-		enter     bool
-		isolatedHome  bool
+		authFile     string
+		container    string
+		distro       string
+		image        string
+		release      string
+		temporary    bool
+		enter        bool
+		isolatedHome bool
 	}
 
 	createToolboxShMounts = []struct {
