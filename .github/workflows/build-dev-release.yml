@@ -22,7 +22,7 @@ jobs:
       - name: configure meson project
         run: meson builddir
       - name: run ninja build
-        run: ninja -C builddir test
+        run: ninja -C builddir -Dinstall_completions=false
       - name: install for packaging purposes
         run: ninja -C builddir install
       - name: quick sanity test
