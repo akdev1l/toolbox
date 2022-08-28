@@ -59,4 +59,4 @@ jobs:
       - name: run system-test.yaml
         run: |
           echo 'export PATH="/tmp/toolbox/bin:$PATH"' | sudo tee /etc/profile.d/test-env.sh
-          ansible-playbook playbooks/system-test.yaml
+          ansible-playbook playbooks/system-test.yaml -i localhost,
