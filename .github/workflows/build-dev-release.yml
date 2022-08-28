@@ -42,7 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: install ansible
-        run: sudo apt install -y ansible && ls
+        run: |
+          sudo apt install -y ansible
+          echo 'export PATH="/tmp/toolbox/bin:$PATH"' | sudo tee /etc/profile.d/test-env.sh
+          ssh-keygen -f ~/.ssh/id_rsa -P ''
+          cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
       - name: setup testing environment
         run: ansible-playbook playbooks/setup-env.yaml -i localhost,
         env:
@@ -60,9 +64,6 @@ jobs:
         run: chmod +x /tmp/toolbox/bin/toolbox
       - name: run system-test.yaml
         run: |
-          echo 'export PATH="/tmp/toolbox/bin:$PATH"' | sudo tee /etc/profile.d/test-env.sh
-          ssh-keygen -f ~/.ssh/id_rsa -P ''
-          cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
           ansible-playbook playbooks/system-test.yaml -i localhost,
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
