@@ -44,14 +44,16 @@ jobs:
       - name: install ansible
         run: sudo apt install -y ansible && ls
       - name: setup testing environment
-        run: ansible-playbook playbooks/setup-env.yaml
+        run: ansible-playbook playbooks/setup-env.yaml -i localhost,
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
       - name: download toolbox artifact
         uses: actions/download-artifact@v3
         with:
           name: toolbox
           path: /tmp/toolbox
       - name: print downloaded file tree
-        run: tree /usr/local
+        run: tree /tmp/toolbox
       - name: make sure toolbox binary is executable
         env:
           SHELL: /bin/bash
@@ -60,3 +62,5 @@ jobs:
         run: |
           echo 'export PATH="/tmp/toolbox/bin:$PATH"' | sudo tee /etc/profile.d/test-env.sh
           ansible-playbook playbooks/system-test.yaml -i localhost,
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
