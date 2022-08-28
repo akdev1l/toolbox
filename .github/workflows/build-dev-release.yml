@@ -7,6 +7,7 @@ on:
       - "src/**"
       - "playbooks/**"
       - "test/**"
+      - ".github/workflows/build-dev-release.yml"
 
 jobs:
   build:
@@ -21,9 +22,9 @@ jobs:
       - name: configure meson project
         run: meson builddir
       - name: run ninja build
-        run: ninja -C builddir build test
+        run: ninja -C builddir test
       - name: install for packaging purposes
-        run: ninja -C build install
+        run: ninja -C builddir install
       - name: quick sanity test
         run: /usr/local/bin/toolbox --version
       - uses: actions/upload-artifact@v3
