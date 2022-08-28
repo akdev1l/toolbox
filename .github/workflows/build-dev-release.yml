@@ -49,12 +49,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: toolbox
-          path: /usr/local
+          path: /tmp/toolbox
       - name: print downloaded file tree
         run: tree /usr/local
       - name: make sure toolbox binary is executable
         env:
           SHELL: /bin/bash
-        run: chmod +x /usr/local/bin/toolbox
+        run: chmod +x /tmp/toolbox/bin/toolbox
       - name: run system-test.yaml
-        run: ansible-playbook playbooks/system-test.yaml
+        run: |
+          echo 'export PATH="/tmp/toolbox/bin:$PATH"' | sudo tee /etc/profile.d/test-env.sh
+          ansible-playbook playbooks/system-test.yaml
