@@ -37,7 +37,7 @@ jobs:
           path: /usr/local/bin/toolbox
   test:
     name: sanity test on ubuntu-latest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - uses: actions/checkout@v2
