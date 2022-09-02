@@ -3,6 +3,8 @@
   tasks:
     - name: Run system tests
       command: bats --timing ./test/system
+      args:
+        chdir: "{{lookup('env', 'GITHUB_WORKSPACE')}}"
       environment:
         PODMAN: '/usr/bin/podman'
         TOOLBOX: '/usr/local/bin/toolbox'
