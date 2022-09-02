@@ -22,6 +22,8 @@
           - udisks2
 
     - name: Setup submodules
+      args:
+        chdir: "{{lookup('env', 'GITHUB_WORKSPACE')}}"
       shell: |
         git submodule init
         git submodule update
