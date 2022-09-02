@@ -11,7 +11,7 @@
           - bats
           - flatpak
           - golang
-          - golang-github-cpuguy83-md2man-v2-dev
+          - golang-github-cpuguy83-go-md2man-v2-dev
           - apache2-utils
           - meson
           - ninja-build
