@@ -35,15 +35,19 @@
       command: podman info --debug
 
     - name: Set up build directory
+      args:
+        chdir: "{{lookup('env', 'GITHUB_WORKSPACE')}}"
       command: meson builddir
 
     - name: Build Toolbox
       command: ninja -C builddir
       args:
         creates: builddir/src/toolbox
+        chdir: "{{lookup('env', 'GITHUB_WORKSPACE')}}"
 
     - name: Install Toolbox
       become: yes
       command: ninja -C builddir install
       args:
         creates: /usr/local/bin/toolbox
+        chdir: "{{lookup('env', 'GITHUB_WORKSPACE')}}"
